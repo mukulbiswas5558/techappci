@@ -59,6 +59,10 @@ $route['razorpay/createOrder'] = 'razorpay/createOrder';
 $route['razorpay/verifyPayment'] = 'razorpay/verifyPayment';
 $route['razorpay/success'] = 'razorpay/success';
 $route['razorpay/failure'] = 'razorpay/failure';
+$route['api/v1/users/(:any)'] = 'user/getUser/$1';
+$route['api/v1/users'] = 'user/getUsers';
+
+
 
 
 

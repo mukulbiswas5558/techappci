@@ -4,7 +4,7 @@ Class Login_model extends CI_Model
   function login($username)
   {
       $this->db->select('*');
-      $this->db->from('useracc');
+      $this->db->from('users');
       $this->db->where('username', $username);
       $this->db->limit(1);
   
@@ -21,7 +21,7 @@ Class Login_model extends CI_Model
   public function getDetails($loggedIn_id) 
   {
       $this->db->select("*");
-      $this->db->from('useracc');
+      $this->db->from('users');
       $this -> db -> where('id', $loggedIn_id);
       $query = $this -> db -> get();
       $result = $query->result();
@@ -36,11 +36,20 @@ Class Login_model extends CI_Model
 
   }
 
+/*************  ✨ Codeium Command 🌟  *************/
+  /**
+   * Update the last login details for a user.
+   *
+   * @param array $last_login_data Array of data to update, containing the user ID and last login timestamp.
+   * @return bool True if the update was successful, false otherwise.
+   */
   public function lastLoginSet($last_login_data)
   {
+      // Update the last login timestamp for the specified user ID
       $this->db->where('id', $last_login_data['id']);
-      $result = $this->db->update('useracc', $last_login_data);
+      $result = $this->db->update('users', $last_login_data);
       return $result;
   }
+/******  650b4058-83e7-4956-8698-1fd76a29f83e  *******/
 }
 ?>

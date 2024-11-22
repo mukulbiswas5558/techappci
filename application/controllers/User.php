@@ -1,35 +1,56 @@
 <?php
-class Details extends CI_Controller
+class User extends CI_Controller
 {
 
 	function __construct()
 	{
 		parent::__construct();
 		$this->load->helper("url");
-		$this->load->library(array('session'));
+		$this->load->model("User_model");
 
-		$this->load->model("details_model");
 	}
 
-	function index()
+	function getUser($user_id)
 	{
+		
+		$data = $this->User_model->getUser($user_id);
 
-		if (isset($this->session->userdata['logged_in'])) {
-			if ($this->session->userdata['logged_in']['role'] == "admin") {
-
-				$this->load->view("header_view");
-				$this->load->view("admin_view");
-				$this->load->view("footer_view");
-				//$this->load->view("admintasklist_temp_view", $data);
-			} else {
-				header("location: login");
-
-
-			}
-
+		// Check if user data is found
+		if ($data) {
+			$response = [
+				'success' => true,
+				'data' => $data
+			];
 		} else {
-			header("location: login");
+			$response = [
+				'success' => false,
+				'data' => null // Set data to null if no user is found
+			];
 		}
+
+		// Output the response with JSON_PRETTY_PRINT for readability
+		echo json_encode($response, JSON_PRETTY_PRINT);
+
+
+	}
+	function getUsers()
+	{
+		
+		$data = $this->User_model->getAllUsers();
+		if ($data) {
+			$response = [
+				'success' => true,
+				'data' => $data
+			];
+		} else {
+			$response = [
+				'success' => false,
+				'data' => $data
+			];
+		}
+		
+		// Output the response with JSON_PRETTY_PRINT
+		echo json_encode($response, JSON_PRETTY_PRINT);
 
 
 	}
