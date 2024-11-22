@@ -16,6 +16,23 @@ Class Login_model extends CI_Model
           return false;
       }
   }
+  function loginuser($username)
+  {
+      // Select all columns from the users table
+      $this->db->select('*');
+      $this->db->from('users');
+      $this->db->where('username', $username);
+      $this->db->limit(1); // Limit to 1 result since we expect only 1 user with a given username
+
+      $query = $this->db->get();
+
+      // Check if there is a user found
+      if ($query->num_rows() == 1) {
+          return $query->row(); // Return the first row as an object
+      } else {
+          return null; // Return null if no user found
+      }
+  }
 
 
   public function getDetails($loggedIn_id) 
