@@ -15,10 +15,7 @@ class PatientLogin extends CI_Controller {
 	function index()
 	{
 	    
-			
-		//$this->load->library('m_pdf');
-        // $html = $this->load->view('GeneratePdfView', [], true);
-        // $this->pdf->createPDF($html, 'mypdf', false);
+
 				
 				$this->load->view("patientlogin_view");
 				

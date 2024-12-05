@@ -1,118 +1,162 @@
 <?php
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 
 class Auth extends CI_Controller
 {
-    private $jwt_key = "your_secret_key"; // Replace with your own secret key
-
     public function __construct()
     {
         parent::__construct();
-        require_once APPPATH . '../vendor/autoload.php';
-        $this->load->model('Login_model'); // Change to correct model if needed
+        $this->load->model('Login_model'); // Ensure your Login_model is properly configured
         $this->load->library('session');
+        $this->load->helper('token'); // Load token helper
     }
 
     /**
-     * User login method
+     * User login method.
      */
     public function login()
     {
-        // Get user credentials
-		$raw_data = file_get_contents('php://input');
-		
+        // Restrict access to POST requests only
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->output->set_status_header(405)
+                         ->set_content_type('application/json')
+                         ->set_output(json_encode([
+                             'success' => false,
+                             'message' => 'GET method is not allowed. Please use POST.'
+                         ]));
+            return;
+        }
 
+        // Decode the JSON payload
+        $raw_data = file_get_contents('php://input');
         $json_data = json_decode($raw_data, true);
-		$username = isset($json_data['username']) ? $json_data['username'] : '';
-		$password = isset($json_data['password']) ? $json_data['password'] : '';
-		
 
-        // Verify user credentials
-        $result = $this->Login_model->loginuser($username); // Make sure this points to the correct model
+        $username = trim($json_data['username'] ?? '');
+        $name = trim($json_data['name'] ?? '');
+
+        // Validate input
+        if (empty($username)) {
+            $this->output->set_status_header(400)
+                         ->set_content_type('application/json')
+                         ->set_output(json_encode([
+                             'success' => false,
+                             'message' => 'Username is required.'
+                         ]));
+            return;
+        }
+
+        // Check if the user exists
+        $result = $this->Login_model->loginuser($username);
 
         if ($result) {
-            // Compare the provided password with the hashed password from the database
-            if (password_verify($password, $result->password)) {
-                // Generate JWT token if the password is correct
-                $payload = [
-                    'iss' => base_url(), // Issuer of the token
-                    'iat' => time(), // Issued at
-                    'exp' => time() + 3600, // Expiration time (1 hour from now)
-                    'user_id' => $result->id,
-                    'role' => $result->role_id
-                ];
-
-                $token = JWT::encode($payload, $this->jwt_key, 'HS256');
-
-                $response = [
-                    'success' => true,
-                    'message' => 'Login successful',
-                    'token' => $token
-                ];
-
-                echo json_encode($response, JSON_PRETTY_PRINT);
-            } else {
-                // Password does not match
-                $response = [
-                    'success' => false,
-                    'message' => 'Invalid credentials'
-                ];
-
-                echo json_encode($response, JSON_PRETTY_PRINT);
-            }
+            // Generate token for existing user
+            $response = createToken($username, $result->role);
+            $this->output->set_status_header(200)
+                         ->set_content_type('application/json')
+                         ->set_output(json_encode($response));
         } else {
-            // User not found
-            $response = [
-                'success' => false,
-                'message' => 'Invalid credentials'
-            ];
+            // Register the user if not found
+            $inserted_id = $this->Login_model->createUser(['username' => $username, 'name' => $name]);
 
-            echo json_encode($response, JSON_PRETTY_PRINT);
+            if ($inserted_id) {
+                // Generate token for new user
+                $response = createToken($username, 'user'); // Default role
+                $this->output->set_status_header(200)
+                             ->set_content_type('application/json')
+                             ->set_output(json_encode($response));
+            } else {
+                // User creation failed
+                $this->output->set_status_header(500)
+                             ->set_content_type('application/json')
+                             ->set_output(json_encode([
+                                 'success' => false,
+                                 'message' => 'Oops! Error creating user.'
+                             ]));
+            }
         }
     }
 
     /**
-     * Decode and validate the token
+     * Validate the JWT token.
      */
     public function validate_token()
     {
-        $token = $this->input->get_request_header('Authorization');
+        // Get the token from the Authorization header
+        $authorization_header = $this->input->get_request_header('Authorization');
 
-        if (!$token) {
-            $response = [
-                'success' => false,
-                'message' => 'Token not provided'
-            ];
-
-            echo json_encode($response, JSON_PRETTY_PRINT);
+        // Check if the Authorization header is set and not empty
+        if (!isset($authorization_header) || empty($authorization_header)) {
+            $this->output->set_status_header(401)
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode([
+                            'success' => false,
+                            'message' => 'Authorization header not provided.'
+                        ]));
             return;
         }
 
-        try {
-            // Remove "Bearer " from the token if included
-            $token = str_replace('Bearer ', '', $token);
+        // Remove 'Bearer ' from the token
+        $token = str_replace('Bearer ', '', $authorization_header);
+       
 
-            // Decode and validate the token
-            $decoded = JWT::decode($token, new Key($this->jwt_key, 'HS256'));
+        // Check if the token is empty after stripping 'Bearer '
+        if (empty($token)) {
+            $this->output->set_status_header(401)
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode([
+                            'success' => false,
+                            'message' => 'Token not provided.'
+                        ]));
+            return;
+        }
 
-            // Token is valid
-            $response = [
-                'success' => true,
-                'message' => 'Token is valid',
-                'data' => $decoded
-            ];
+        // Validate the token using the helper function
+        $result = validateToken($token);
+        
+        if ($result['success']) {
+            // Assuming the 'username' is part of the decoded token
+            $decoded_data = $result['data'];
+            $username = $decoded_data['username'] ?? null;
 
-            echo json_encode($response, JSON_PRETTY_PRINT);
-        } catch (Exception $e) {
-            // Token is invalid
-            $response = [
-                'success' => false,
-                'message' => 'Invalid token: ' . $e->getMessage()
-            ];
+            if ($username) {
+                // Load the user model
+               
 
-            echo json_encode($response, JSON_PRETTY_PRINT);
+                // Fetch user details by username
+                $user = $this->Login_model->get_user_by_username($username);
+
+                if ($user) {
+                    $this->output->set_status_header(200)
+                                ->set_content_type('application/json')
+                                ->set_output(json_encode([
+                                    'success' => true,
+                                    'message' => 'Token is valid.',
+                                    'user'    => $user
+                                ]));
+                } else {
+                    $this->output->set_status_header(404)
+                                ->set_content_type('application/json')
+                                ->set_output(json_encode([
+                                    'success' => false,
+                                    'message' => 'User not found.'
+                                ]));
+                }
+            } else {
+                $this->output->set_status_header(400)
+                            ->set_content_type('application/json')
+                            ->set_output(json_encode([
+                                'success' => false,
+                                'message' => 'Username not found in token.'
+                            ]));
+            }
+        } else {
+            $this->output->set_status_header(401)
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode([
+                            'success' => false,
+                            'message' => $result['message']
+                        ]));
         }
     }
 }
+
 ?>
