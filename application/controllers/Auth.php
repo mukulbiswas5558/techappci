@@ -15,75 +15,76 @@ class Auth extends CI_Controller
      */
     public function login()
     {
-        // Restrict access to POST requests only
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->output->set_status_header(405)
-                         ->set_content_type('application/json')
-                         ->set_output(json_encode([
-                             'success' => false,
-                             'message' => 'GET method is not allowed. Please use POST.'
-                         ]));
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode([
+                            'success' => false,
+                            'message' => 'GET method is not allowed. Please use POST.'
+                        ]));
             return;
         }
 
-        // Decode the JSON payload
         $raw_data = file_get_contents('php://input');
         $json_data = json_decode($raw_data, true);
 
         $username = trim($json_data['username'] ?? '');
         $name = trim($json_data['name'] ?? '');
 
-        // Validate input
         if (empty($username)) {
             $this->output->set_status_header(400)
-                         ->set_content_type('application/json')
-                         ->set_output(json_encode([
-                             'success' => false,
-                             'message' => 'Username is required.'
-                         ]));
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode([
+                            'success' => false,
+                            'message' => 'Username is required.'
+                        ]));
             return;
         }
 
-        // Check if the user exists
         $result = $this->Login_model->loginuser($username);
-
+       
         if ($result) {
-            // Generate token for existing user
-            $response = createToken($username, $result->role);
+            $accessToken = generate_access_token($username);
+            $refreshToken = generate_refresh_token($username);
+
             $this->output->set_status_header(200)
-                         ->set_content_type('application/json')
-                         ->set_output(json_encode($response));
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode([
+                            'success' => true,
+                            'message' => 'Login successful.',
+                            'access_token' => $accessToken['jwt'],
+                            'refresh_token' => $refreshToken['jwt']
+                        ]));
         } else {
-            // Register the user if not found
             $inserted_id = $this->Login_model->createUser(['username' => $username, 'name' => $name]);
 
             if ($inserted_id) {
-                // Generate token for new user
-                $response = createToken($username, 'user'); // Default role
+                $accessToken = generate_access_token($username);
+                $refreshToken = generate_refresh_token($username);
+
                 $this->output->set_status_header(200)
-                             ->set_content_type('application/json')
-                             ->set_output(json_encode($response));
+                            ->set_content_type('application/json')
+                            ->set_output(json_encode([
+                                'success' => true,
+                                'message' => 'User registered successfully.',
+                                'access_token' => $accessToken['jwt'],
+                                'refresh_token' => $refreshToken['jwt']
+                            ]));
             } else {
-                // User creation failed
                 $this->output->set_status_header(500)
-                             ->set_content_type('application/json')
-                             ->set_output(json_encode([
-                                 'success' => false,
-                                 'message' => 'Oops! Error creating user.'
-                             ]));
+                            ->set_content_type('application/json')
+                            ->set_output(json_encode([
+                                'success' => false,
+                                'message' => 'Error creating user.'
+                            ]));
             }
         }
     }
 
-    /**
-     * Validate the JWT token.
-     */
     public function validate_token()
     {
-        // Get the token from the Authorization header
         $authorization_header = $this->input->get_request_header('Authorization');
 
-        // Check if the Authorization header is set and not empty
         if (!isset($authorization_header) || empty($authorization_header)) {
             $this->output->set_status_header(401)
                         ->set_content_type('application/json')
@@ -94,68 +95,110 @@ class Auth extends CI_Controller
             return;
         }
 
-        // Remove 'Bearer ' from the token
         $token = str_replace('Bearer ', '', $authorization_header);
-       
 
-        // Check if the token is empty after stripping 'Bearer '
         if (empty($token)) {
             $this->output->set_status_header(401)
                         ->set_content_type('application/json')
                         ->set_output(json_encode([
                             'success' => false,
                             'message' => 'Token not provided.'
+        // Extract the token from the header
                         ]));
             return;
         }
+            // If token is empty, return 401 Unauthorized
 
-        // Validate the token using the helper function
-        $result = validateToken($token);
-        
-        if ($result['success']) {
-            // Assuming the 'username' is part of the decoded token
-            $decoded_data = $result['data'];
-            $username = $decoded_data['username'] ?? null;
+        $result = validate_access_token($token);
 
-            if ($username) {
-                // Load the user model
-               
+        if ($result['responseCode'] === '200') {
+            $user = $this->Login_model->get_user_by_id($result['userId']);
 
-                // Fetch user details by username
-                $user = $this->Login_model->get_user_by_username($username);
-
-                if ($user) {
-                    $this->output->set_status_header(200)
-                                ->set_content_type('application/json')
-                                ->set_output(json_encode([
-                                    'success' => true,
-                                    'message' => 'Token is valid.',
-                                    'user'    => $user
-                                ]));
-                } else {
-                    $this->output->set_status_header(404)
-                                ->set_content_type('application/json')
-                                ->set_output(json_encode([
-                                    'success' => false,
-                                    'message' => 'User not found.'
-                                ]));
-                }
+            if ($user) {
+                $this->output->set_status_header(200)
+                            ->set_content_type('application/json')
+        // Validate the token
+                            ->set_output(json_encode([
+                                'success' => true,
+                                'message' => 'Token is valid.',
+            // If token is valid, get the user
+                                'user'    => $user
+                            ]));
             } else {
-                $this->output->set_status_header(400)
+                // If user is found, return 200 OK
+                $this->output->set_status_header(404)
                             ->set_content_type('application/json')
                             ->set_output(json_encode([
                                 'success' => false,
-                                'message' => 'Username not found in token.'
+                                'message' => 'User not found.'
                             ]));
             }
         } else {
+                // If user is not found, return 404 Not Found
             $this->output->set_status_header(401)
                         ->set_content_type('application/json')
                         ->set_output(json_encode([
                             'success' => false,
-                            'message' => $result['message']
+                            'message' => $result['responseMessage']
                         ]));
         }
+    }
+    
+    public function get_access_token_by_refresh_token() {
+        // Get the refresh token from the POST request
+        $headers = getallheaders();
+        $authHeader = isset($headers['Authorization']) ? $headers['Authorization'] : null;
+        
+        // Extract the Bearer token
+        if ($authHeader && preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            $refreshToken = $matches[1];
+        } else {
+            $refreshToken = null;
+        }
+        
+        // Validate the presence of refresh token
+        if (empty($refreshToken)) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'success' => false,
+                    'responseCode' => '400',
+                    'responseMessage' => 'Refresh token is required'
+                ]));
+        }
+
+        // Validate the refresh token using helper
+        $validationResponse = validate_refresh_token($refreshToken);
+
+        // If validation fails, return the error response
+        if ($validationResponse['responseCode'] !== "200") {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($validationResponse));
+        }
+        
+        // Extract userId from the validated token
+        $userId = $validationResponse['userId'];
+
+        // Generate a new access token
+        $newAccessToken = generate_access_token($userId);
+
+        // If the token generation fails, return an error
+        if ($newAccessToken['responseCode'] !== "200") {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($newAccessToken));
+        }
+
+        // Return the new access token in the response
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'success' => true,
+                'responseCode' => '200',
+                'responseMessage' => 'Access token generated successfully',
+                'accessToken' => $newAccessToken['jwt']
+            ]));
     }
 }
 

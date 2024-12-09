@@ -62,7 +62,7 @@ $route['razorpay/failure'] = 'razorpay/failure';
 $route['api/v1/users/(:any)'] = 'user/getUser/$1';
 $route['api/v1/users'] = 'user/getUsers';
 $route['api/v1/auth/login'] = 'auth/login';
-$route['api/v1/auth/validate_token'] = 'auth/validate_token';
+$route['api/v1/auth/get_access_token_by_refresh_token'] = 'auth/get_access_token_by_refresh_token';
 
 
 

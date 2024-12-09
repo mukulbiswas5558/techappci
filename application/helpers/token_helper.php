@@ -3,75 +3,111 @@ require_once APPPATH . '../vendor/autoload.php';
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-
-// Load Composer's autoloader for Firebase JWT
-
-// Define a constant for the secret key to avoid hardcoding
-define('JWT_SECRET_KEY', 'your_secret_key'); // Use environment variables in production
-
-/**
- * Create a JWT token.
- *
- * @param string $username The username to include in the token.
- * @param int $role_id The role ID to include in the token.
- * @return array The response containing the token and additional info.
- */
-function createToken($username, $role_id)
-{
-    $payload = [
-        'iss' => base_url(),      // Issuer of the token
-        'iat' => time(),          // Issued at time
-        'exp' => time() + 3600,   // Expiry time (1 hour)
-        'username' => $username,   // Payload data: User ID or username
-        'role' => $role_id        // Payload data: Role ID
-    ];
-
-    // Generate the JWT token
-    $token = JWT::encode($payload, JWT_SECRET_KEY, 'HS256');
-
-    return [
-        'success' => true,
-        'message' => 'Login successful.',
-        'data' => [
-            'username' => $username,
-            'role' => $role_id
-        ],
-        'token' => $token
-    ];
+function generate_access_token($userId) {
+    return generate_jwt($userId, 'access');
 }
 
-/**
- * Validate a JWT token.
- *
- * @param string $token The JWT token to validate.
- * @return array The validation result, including success status and decoded data.
- */
-function validateToken($token)
-{
-    if (!$token) {
-        return [
-            'success' => false,
-            'message' => 'Token not provided'
-        ];
+function generate_refresh_token($userId) {
+    return generate_jwt($userId, 'refresh');
+}
+
+function validate_access_token($jwt) {
+    return validate_jwt($jwt, 'access');
+}
+
+function validate_refresh_token($jwt) {
+    $decoded = validate_jwt($jwt, 'refresh');
+
+    if ($decoded["responseCode"] === "200") {
+        $userId = $decoded["userId"];
+        if (is_refresh_token_valid($userId, $jwt)) {
+            return [
+                'success' => true,
+                "responseCode" => "200",
+                "userId" => $userId,
+                "responseMessage" => "Refresh token validated successfully"
+            ];
+        } else {
+            return [
+                'success' => false,
+                "responseCode" => "401",
+                "responseMessage" => "Refresh token is invalid or expired"
+            ];
+        }
+    } else {
+        return $decoded;
     }
+}
+
+function generate_jwt($userId, $type = 'access') {
+    $config = include(APPPATH . 'config/jwt_config.php');
+    $date = new DateTimeImmutable();
+    $secretKey = $config[$type === 'access' ? "ACCESS_SECRET_KEY" : "REFRESH_SECRET_KEY"];
+    $expirationTime = $config[$type === 'access' ? "ACCESS_SECRET_EXPIRY_TIME" : "REFRESH_SECRET_EXPIRY_TIME"];
+    
+    // Calculate expiration timestamp and format it as DATETIME
+    $expirationTimestamp = $date->getTimestamp() + $expirationTime;
+    $expirationDatetime = date('Y-m-d H:i:s', $expirationTimestamp);
+
+    $payload = [
+        'iat' => $date->getTimestamp(),
+        'iss' => $config["ISS"],
+        'nbf' => $date->getTimestamp(),
+        'exp' => $expirationTimestamp,
+        'userId' => $userId,
+        'type' => $type
+    ];
 
     try {
-        // Decode the JWT token
-        $decoded = JWT::decode($token, new Key(JWT_SECRET_KEY, 'HS256'));
-
-        // Return success response with decoded data
+        $jwt = JWT::encode($payload, $secretKey, 'HS256');
+        if ($type === 'refresh') {
+            store_refresh_token($userId, $jwt, $expirationDatetime);
+        }
         return [
-            'success' => true,
-            'message' => 'Token is valid.',
-            'data' => (array) $decoded
+            "responseCode" => "200",
+            "jwt" => $jwt,
+            "responseMessage" => ucfirst($type) . " token generated successfully"
         ];
     } catch (Exception $e) {
-        // Catch and handle token validation errors
         return [
-            'success' => false,
-            'message' => 'Invalid token: ' . $e->getMessage()
+            "responseCode" => "500",
+            "responseMessage" => $e->getMessage()
         ];
     }
 }
 
-?>
+
+function validate_jwt($jwt, $type) {
+    $config = include(APPPATH . 'config/jwt_config.php');
+    $secretKey = $config[$type === 'access' ? "ACCESS_SECRET_KEY" : "REFRESH_SECRET_KEY"];
+
+    try {
+        $decoded = JWT::decode($jwt, new Key($secretKey, 'HS256'));
+        return [
+            'success' => true,
+            "responseCode" => "200",
+
+            "userId" => $decoded->userId,
+            "responseMessage" => ucfirst($type) . " token validated successfully"
+        ];
+    } catch (Exception $e) {
+        return [
+            'success' => false,
+            "responseCode" => "401",
+            "responseMessage" => $e->getMessage()
+        ];
+    }
+}
+
+
+function store_refresh_token($userId, $refreshToken, $expiresAt) {
+    $CI =& get_instance();
+    $CI->load->model('User_model');
+    
+    return $CI->User_model->storeRefreshToken($userId, $refreshToken, $expiresAt);
+}
+function is_refresh_token_valid($userId, $refreshToken) {
+    $CI =& get_instance();
+    $CI->load->model('User_model');
+    return $CI->User_model->validateRefreshToken($userId, $refreshToken);
+}
