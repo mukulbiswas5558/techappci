@@ -27,10 +27,16 @@
 	<link href="<?php echo base_url(); ?>assets/vendor/quill/quill.bubble.css" rel="stylesheet">
 	<link href="<?php echo base_url(); ?>assets/vendor/remixicon/remixicon.css" rel="stylesheet">
 	<link href="<?php echo base_url(); ?>assets/vendor/simple-datatables/style.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.18/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 
 	<!-- Template Main CSS File -->
 	<link href="<?php echo base_url(); ?>assets/css/style.css" rel="stylesheet">
-
+	<script>
+		var base_url = "<?php echo base_url(); ?>";
+	</script>
 	<!-- =======================================================
   * Template Name: NiceAdmin
   * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
@@ -175,12 +181,12 @@
 
 			<li class="nav-item">
 				<a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
-					<i class="bi bi-bar-chart"></i><span>Charts</span><i class="bi bi-chevron-down ms-auto"></i>
+					<i class="bi bi-bar-chart"></i><span>Details</span><i class="bi bi-chevron-down ms-auto"></i>
 				</a>
 				<ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
 					<li>
-						<a href="charts-chartjs.html">
-							<i class="bi bi-circle"></i><span>Chart.js</span>
+						<a href="<?php echo base_url(); ?>details/country">
+							<i class="bi bi-circle"></i><span>Country List</span>
 						</a>
 					</li>
 					<li>
