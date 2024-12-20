@@ -185,13 +185,13 @@
 				</a>
 				<ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
 					<li>
-						<a href="<?php echo base_url(); ?>details/country">
+						<a href="<?php echo base_url(); ?>country/country">
 							<i class="bi bi-circle"></i><span>Country List</span>
 						</a>
 					</li>
 					<li>
-						<a href="charts-apexcharts.html">
-							<i class="bi bi-circle"></i><span>ApexCharts</span>
+						<a href="<?php echo base_url(); ?>state/state">
+							<i class="bi bi-circle"></i><span>State List</span>
 						</a>
 					</li>
 					<li>

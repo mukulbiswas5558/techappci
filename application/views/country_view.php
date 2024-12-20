@@ -89,19 +89,77 @@
 
 						<!-- Table with hoverable rows -->
 						<table id="countryTable" class="display" style="width:100%">
-							<thead>
-								<tr>
-									<th>ID</th>
-									<th>ISO</th>
-									<th>Name</th>
-									<th>Nicename</th>
-									<th>Numcode</th>
-									<th>Phonecode</th>
-									<th>Capital</th>
-									<th>Action</th>
-								</tr>
-							</thead>
-						</table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>ID Country</th>
+                                    <th>Country Name</th>
+                                    <th>Initial</th>
+                                    <th>Flag</th>
+                                    <th>Continent Name</th>
+                                    <th>Major Cities</th>
+                                    <th>Capital</th>
+                                    <th>Location</th>
+                                    <th>Border Shared</th>
+                                    <th>Area</th>
+                                    <th>Climate</th>
+                                    <th>Topography</th>
+                                    <th>Population</th>
+                                    <th>Ethnic Groups</th>
+                                    <th>Language</th>
+                                    <th>Religions</th>
+                                    <th>Government Type</th>
+                                    <th>Prime Minister</th>
+                                    <th>President</th>
+                                    <th>Vice President</th>
+                                    <th>Administrative Division</th>
+                                    <th>Currency</th>
+                                    <th>GDP</th>
+                                    <th>GDP Per Capita</th>
+                                    <th>Major Industry</th>
+                                    <th>Exports</th>
+                                    <th>Imports</th>
+                                    <th>Brief History</th>
+                                    <th>Key Historical Events</th>
+                                    <th>Tourist Statistics</th>
+                                    <th>Education System</th>
+                                    <th>Literacy Rate</th>
+                                    <th>Healthcare System</th>
+                                    <th>Life Expectancy</th>
+                                    <th>Holidays</th>
+                                    <th>Cuisine</th>
+                                    <th>Sports</th>
+                                    <th>Major Attractions</th>
+                                    <th>Independence Date</th>
+                                    <th>Denonym</th>
+                                    <th>Area Rank</th>
+                                    <th>Population Rank</th>
+                                    <th>GDP Rank</th>
+                                    <th>Literacy Rate Rank</th>
+                                    <th>Male Literacy</th>
+                                    <th>Female Literacy</th>
+                                    <th>Sex Ratio</th>
+                                    <th>Sex Rank</th>
+                                    <th>Child Sex Ratio</th>
+                                    <th>Child Sex Rank</th>
+                                    <th>Emblem Image</th>
+                                    <th>Song</th>
+                                    <th>Bird</th>
+                                    <th>Fish</th>
+                                    <th>Flower</th>
+                                    <th>Fruit</th>
+                                    <th>Mammal</th>
+                                    <th>Tree</th>
+                                    <th>Map Link</th>
+                                    <th>Chief Justice</th>
+                                    <th>Latitude</th>
+                                    <th>Longitude</th>
+                                    <th>Created At</th>
+                                    <th>Updated At</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                        </table>
 						<!-- End Table with hoverable rows -->
 
 					</div>

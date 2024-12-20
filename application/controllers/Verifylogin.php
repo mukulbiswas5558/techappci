@@ -6,11 +6,9 @@ class VerifyLogin extends CI_Controller
 	function __construct()
 	{
 	   parent::__construct();
-	   $this->load->helper('form');
 	   $this->load->library('form_validation');
 	   $this->load->library('session');
 	   $this->load->model('Admin_Login_model','',TRUE);
-	   $this->load->library('table');
 	}
 
 	public function index()

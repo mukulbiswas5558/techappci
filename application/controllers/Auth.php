@@ -5,9 +5,10 @@ class Auth extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('Login_model'); // Ensure your Login_model is properly configured
+        $this->load->model(['Login_model','Country_model','State_model']); // Ensure your Login_model is properly configured
         $this->load->library('session');
         $this->load->helper('token'); // Load token helper
+        $this->load->helper('authheader');
     }
 
     /**
@@ -83,36 +84,27 @@ class Auth extends CI_Controller
 
     public function validate_token()
     {
-        $authorization_header = $this->input->get_request_header('Authorization');
+        $tokenResponse = get_authorization_token();
 
-        if (!isset($authorization_header) || empty($authorization_header)) {
-            $this->output->set_status_header(401)
-                        ->set_content_type('application/json')
-                        ->set_output(json_encode([
-                            'success' => false,
-                            'message' => 'Authorization header not provided.'
-                        ]));
-            return;
+        if (!$tokenResponse['success']) {
+            // Return the error response if token extraction failed
+            return $this->output
+                ->set_status_header($tokenResponse['status'])
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'success' => false,
+                    'message' => $tokenResponse['message']
+                ]));
         }
 
-        $token = str_replace('Bearer ', '', $authorization_header);
-
-        if (empty($token)) {
-            $this->output->set_status_header(401)
-                        ->set_content_type('application/json')
-                        ->set_output(json_encode([
-                            'success' => false,
-                            'message' => 'Token not provided.'
-        // Extract the token from the header
-                        ]));
-            return;
-        }
+        $token = $tokenResponse['token'];
             // If token is empty, return 401 Unauthorized
 
         $result = validate_access_token($token);
+      
 
         if ($result['responseCode'] === '200') {
-            $user = $this->Login_model->get_user_by_id($result['userId']);
+            $user = $this->Login_model->get_user_by_username($result['userId']);
 
             if ($user) {
                 $this->output->set_status_header(200)
@@ -146,29 +138,23 @@ class Auth extends CI_Controller
     
     public function get_access_token_by_refresh_token() {
         // Get the refresh token from the POST request
-        $headers = getallheaders();
-        $authHeader = isset($headers['Authorization']) ? $headers['Authorization'] : null;
-        
-        // Extract the Bearer token
-        if ($authHeader && preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
-            $refreshToken = $matches[1];
-        } else {
-            $refreshToken = null;
-        }
-        
-        // Validate the presence of refresh token
-        if (empty($refreshToken)) {
+        $tokenResponse = get_authorization_token();
+
+        if (!$tokenResponse['success']) {
+            // Return the error response if token extraction failed
             return $this->output
+                ->set_status_header($tokenResponse['status'])
                 ->set_content_type('application/json')
                 ->set_output(json_encode([
                     'success' => false,
-                    'responseCode' => '400',
-                    'responseMessage' => 'Refresh token is required'
+                    'message' => $tokenResponse['message']
                 ]));
         }
 
+        $token = $tokenResponse['token'];
+
         // Validate the refresh token using helper
-        $validationResponse = validate_refresh_token($refreshToken);
+        $validationResponse = validate_refresh_token($token);
 
         // If validation fails, return the error response
         if ($validationResponse['responseCode'] !== "200") {
@@ -199,6 +185,82 @@ class Auth extends CI_Controller
                 'responseMessage' => 'Access token generated successfully',
                 'accessToken' => $newAccessToken['jwt']
             ]));
+    }
+
+
+
+    public function fetch_countries() {
+        $tokenResponse = get_authorization_token();
+
+        if (!$tokenResponse['success']) {
+            return $this->output
+                ->set_status_header($tokenResponse['status'])
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'success' => false,
+                    'message' => $tokenResponse['message']
+                ]));
+        }
+
+        $token = $tokenResponse['token'];
+        $result = validate_access_token($token);
+
+        if ($result['responseCode'] === '200') {
+            $countries = $this->Country_model->get_countries('', 0, 10, '', 'ASC');
+
+            return $this->output
+                ->set_status_header(200)
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'success' => true,
+                    'data' => $countries
+                ]));
+        } else {
+            return $this->output
+                ->set_status_header(401)
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'success' => false,
+                    'message' => $result['responseMessage']
+                ]));
+        }
+    }
+
+    public function fetch_states() {
+        $tokenResponse = get_authorization_token();
+
+        if (!$tokenResponse['success']) {
+            return $this->output
+                ->set_status_header($tokenResponse['status'])
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'success' => false,
+                    'message' => $tokenResponse['message']
+                ]));
+        }
+
+        $token = $tokenResponse['token'];
+        $result = validate_access_token($token);
+
+        if ($result['responseCode'] === '200') {
+            $states = $this->State_model->get_states('', 0, 10, '', 'ASC');
+
+            return $this->output
+                ->set_status_header(200)
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'success' => true,
+                    'data' => $states
+                ]));
+        } else {
+            return $this->output
+                ->set_status_header(401)
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'success' => false,
+                    'message' => $result['responseMessage']
+                ]));
+        }
     }
 }
 

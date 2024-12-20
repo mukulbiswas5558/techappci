@@ -102,26 +102,7 @@ class User extends CI_Controller
 		}
 
 	}
-	public function dompdf()
-	{
-		// Load the Pdf library
-		$this->load->library('Pdf');
-
-		// Create HTML content
-		$html = '<h1>PDF Title</h1>';
-		$html .= '<p>This is a sample PDF generated using Dompdf in CodeIgniter 3 and saved to the assets folder.</p>';
-
-		// Ensure 'assets/pdf' directory exists (Create it if not)
-		if (!is_dir(FCPATH . 'assets/pdf')) {
-			mkdir(FCPATH . 'assets/pdf', 0777, true);  // Create the directory with appropriate permissions
-		}
-
-		// Generate and save the PDF
-		$this->pdf->createPDF($html, 'sample_pdf', false);  // 'false' means no stream, just save
-
-		echo "PDF generated and saved to assets/pdf/sample_pdf.pdf";
-	}
-
+	
 
 }
 ?>

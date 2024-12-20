@@ -1,0 +1,328 @@
+public class Urls {
+    public static final String BASE_URL                 = "https://blog.atsofttech.in/QuizzyPedia/api/";
+    public static final String STORE_USER               = BASE_URL + "store-user";
+    public static final String USER_BLOG                = BASE_URL + "user-blog";
+    public static final String ARTICLE_DETAILS          = BASE_URL + "article";
+    public static final String FETCH_COUNTRIES          = BASE_URL+"fetch-countries";
+    public static final String FETCH_STATES             = BASE_URL+"fetch-states";
+    public static final String FETCH_STATE_BY_ID        = BASE_URL+"fetch-state-by-id";
+    public static final String FETCH_COUNTRY_DETAIL_ID  = BASE_URL+"fetch-country-detail-id";
+    public static final String FETCH_ALL_BLOGS          = BASE_URL +"fetch-all-blogs";
+    public static final String TRENDING_BLOG_LIST       = BASE_URL +"trending-blog-list";
+    public static final String FETCH_BLOG_BY_ID         = BASE_URL +"fetch-blog-by-id";
+    public static final String FETCH_BLOG_BY_COUNTRY_ID = BASE_URL +"fetch-blog-by-country-id";
+    public static final String FETCH_BLOG_BY_STATE_ID   = BASE_URL +"fetch-blog-by-state-id";
+    public static final String POLICY   = "https://atsofttech.in/privacy-policy-2/";
+
+
+}
+
+
+
+
+String idCountry = countryDetail.getString("id");
+Log.d(TAG, "countryId: "+idCountry);
+ countryName = countryDetail.getString("country_name");
+String initial = countryDetail.getString("initial");
+ flag = countryDetail.getString("flag");
+String continentName = countryDetail.getString("continent_name");
+String majorCitie = countryDetail.getString("major_cities");
+String capital = countryDetail.getString("capital");
+String location = countryDetail.getString("location");
+String borderShared = countryDetail.getString("border_shared");
+String area = countryDetail.getString("area");
+String climate = countryDetail.getString("climate");
+String topography = countryDetail.getString("topography");
+String population = countryDetail.getString("population");
+String ethnicGroups = countryDetail.getString("ethnic_groups");
+String language = countryDetail.getString("language");
+String religions = countryDetail.getString("religions");
+String governmentType = countryDetail.getString("government_type");
+String primeMinister = countryDetail.getString("prime_minister");
+String president = countryDetail.getString("president");
+String vicePresident = countryDetail.getString("vice_president");
+String administrativeDivision = countryDetail.getString("administrative_division");
+String currency = countryDetail.getString("currency");
+String gdp = countryDetail.getString("gdp");
+String gdpPerCapita = countryDetail.getString("gdp_per_capita");
+String majorIndustry = countryDetail.getString("major_industry");
+String exports = countryDetail.getString("exports");
+String imports = countryDetail.getString("imports");
+ briefHistory = countryDetail.getString("brief_history");
+String keyHistoricalEvents = countryDetail.getString("key_historical_events");
+String touristStat = countryDetail.getString("tourist_stat");
+String educationSystem = countryDetail.getString("education_system");
+String literacyRate = countryDetail.getString("literacy_rate");
+String healthcareSystem = countryDetail.getString("healthcare_system");
+String lifeExpectancy = countryDetail.getString("life_expectancy");
+String holidays = countryDetail.getString("holidays");
+String cuisine = countryDetail.getString("cuisine");
+String sports = countryDetail.getString("sports");
+String major_attractions = countryDetail.getString("major_attractions");
+String tourist_stat = countryDetail.getString("tourist_stat");
+String education_system = countryDetail.getString("education_system");
+String life_expectancy = countryDetail.getString("life_expectancy");
+String independanceDate = countryDetail.getString("independance_date");
+String denonym = countryDetail.getString("denonym");
+String area_rank = countryDetail.getString("area_rank");
+String population_rank = countryDetail.getString("population_rank");
+String gdp_rank = countryDetail.getString("gdp_rank");
+String literacy_rate_rank = countryDetail.getString("literacy_rate_rank");
+String male_literacy = countryDetail.getString("male_literacy");
+String female_literacy = countryDetail.getString("female_literacy");
+String sex_ratio = countryDetail.getString("sex_ratio");
+String sex_rank = countryDetail.getString("sex_rank");
+String child_sex_ratio = countryDetail.getString("child_sex_ratio");
+String child_sex_rank = countryDetail.getString("child_sex_rank");
+String embelam_image_url = countryDetail.getString("embelamImage");
+String song = countryDetail.getString("song");
+String bird = countryDetail.getString("bird");
+String fish = countryDetail.getString("fish");
+String flower = countryDetail.getString("flower");
+String fruit = countryDetail.getString("fruit");
+String mammal = countryDetail.getString("mammal");
+String tree = countryDetail.getString("tree");
+map_link_url = countryDetail.getString("map_link_url");
+String chief_justice = countryDetail.getString("chief_justice");
+latitude = countryDetail.getString("latitude");
+longitude = countryDetail.getString("longitude");
+
+
+
+String resCode = response.getString("code");
+
+if (resCode.equalsIgnoreCase("200")) {
+
+    JSONObject state = response.getJSONObject("state");
+    String id = state.getString("id");
+    String name = state.getString("name");
+    String slug = state.getString("slug");
+    String code = state.getString("code");
+    String created_at = state.getString("created_at");
+    String updated_at = state.getString("updated_at");
+    String continent_name = state.getString("continent_name");
+    String country_name = state.getString("country_name");
+    String capital = state.getString("capital");
+
+    JSONObject stateDetails = state.getJSONObject("state_detail");
+
+    briefHistory = stateDetails.getString("aboutState");
+    String formationDate = stateDetails.getString("formationDate");
+    String language = stateDetails.getString("language");
+    String chiefMinister = stateDetails.getString("chiefMinister");
+    String governor = stateDetails.getString("governor");
+    String chiefJustice = stateDetails.getString("chiefJustice");
+    String denonyme = stateDetails.getString("denonyme");
+    String area = stateDetails.getString("area");
+    String areaRank = stateDetails.getString("areaRank");
+    String population = stateDetails.getString("population");
+    String populationRank = stateDetails.getString("populationRank");
+    String gdp = stateDetails.getString("gdp");
+    String gdpRank = stateDetails.getString("gdpRank");
+    String perCapitalIncome = stateDetails.getString("perCapitalIncome");
+    String perCapitalIncomeRank = stateDetails.getString("perCapitalIncomeRank");
+    String literacy = stateDetails.getString("literacy");
+    String literacyRank = stateDetails.getString("literacyRank");
+    String maleLiteracy = stateDetails.getString("maleLiteracy");
+    String femaleLiteracy = stateDetails.getString("femaleLiteracy");
+    String sexRatio = stateDetails.getString("sexRatio");
+    String sexRatioRank = stateDetails.getString("sexRatioRank");
+    String childSexRatio = stateDetails.getString("childSexRatio");
+    String childSexRatioRank = stateDetails.getString("childSexRatioRank");
+    String embelam_image = stateDetails.getString("embelam_image");
+    String song = stateDetails.getString("song");
+    String bird = stateDetails.getString("bird");
+    String fish = stateDetails.getString("fish");
+    String flower = stateDetails.getString("flower");
+    String fruit = stateDetails.getString("fruit");
+    String mammal = stateDetails.getString("mammal");
+    String tree = stateDetails.getString("tree");
+    String assembly = stateDetails.getString("assembly");
+    String highCourt = stateDetails.getString("highCourt");
+    String rajyaSavaSeat = stateDetails.getString("rajyaSavaSeat");
+    String lokSavaSeat = stateDetails.getString("lokSavaSeat");
+    map_link_url = stateDetails.getString("map_link_url");
+
+
+
+
+
+    CREATE TABLE country (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_country VARCHAR(255) NOT NULL,
+    country_name VARCHAR(255) NOT NULL,
+    initial VARCHAR(255),
+    flag TEXT,
+    continent_name VARCHAR(255),
+    major_cities TEXT,
+    capital VARCHAR(255),
+    location VARCHAR(255),
+    border_shared TEXT,
+    area VARCHAR(255),
+    climate VARCHAR(255),
+    topography TEXT,
+    population VARCHAR(255),
+    ethnic_groups TEXT,
+    language TEXT,
+    religions TEXT,
+    government_type VARCHAR(255),
+    prime_minister VARCHAR(255),
+    president VARCHAR(255),
+    vice_president VARCHAR(255),
+    administrative_division TEXT,
+    currency VARCHAR(255),
+    gdp VARCHAR(255),
+    gdp_per_capita VARCHAR(255),
+    major_industry TEXT,
+    exports TEXT,
+    imports TEXT,
+    brief_history TEXT,
+    key_historical_events TEXT,
+    tourist_stat VARCHAR(255),
+    education_system TEXT,
+    literacy_rate VARCHAR(255),
+    healthcare_system TEXT,
+    life_expectancy VARCHAR(255),
+    holidays TEXT,
+    cuisine TEXT,
+    sports TEXT,
+    major_attractions TEXT,
+    independance_date DATE,
+    denonym VARCHAR(255),
+    area_rank VARCHAR(255),
+    population_rank VARCHAR(255),
+    gdp_rank VARCHAR(255),
+    literacy_rate_rank VARCHAR(255),
+    male_literacy VARCHAR(255),
+    female_literacy VARCHAR(255),
+    sex_ratio VARCHAR(255),
+    sex_rank VARCHAR(255),
+    child_sex_ratio VARCHAR(255),
+    child_sex_rank VARCHAR(255),
+    embelam_image_url TEXT,
+    song TEXT,
+    bird VARCHAR(255),
+    fish VARCHAR(255),
+    flower VARCHAR(255),
+    fruit VARCHAR(255),
+    mammal VARCHAR(255),
+    tree VARCHAR(255),
+    map_link_url TEXT,
+    chief_justice VARCHAR(255),
+    latitude VARCHAR(255),
+    longitude VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+CREATE TABLE state (
+    id INT PRIMARY KEY,
+    country_id INT,
+    name VARCHAR(255),
+    slug VARCHAR(255),
+    code VARCHAR(50),
+    created_at DATETIME,
+    updated_at DATETIME,
+    continent_name VARCHAR(255),
+    country_name VARCHAR(255),
+    capital VARCHAR(255),
+    brief_history TEXT,
+    formation_date DATE,
+    language VARCHAR(255),
+    chief_minister VARCHAR(255),
+    governor VARCHAR(255),
+    chief_justice VARCHAR(255),
+    denonyme VARCHAR(255),
+    area DECIMAL(15, 2),
+    area_rank INT,
+    population INT,
+    population_rank INT,
+    gdp DECIMAL(15, 2),
+    gdp_rank INT,
+    per_capita_income DECIMAL(15, 2),
+    per_capita_income_rank INT,
+    literacy DECIMAL(5, 2),
+    literacy_rank INT,
+    male_literacy DECIMAL(5, 2),
+    female_literacy DECIMAL(5, 2),
+    sex_ratio DECIMAL(5, 2),
+    sex_ratio_rank INT,
+    child_sex_ratio DECIMAL(5, 2),
+    child_sex_ratio_rank INT,
+    embelam_image VARCHAR(255),
+    song VARCHAR(255),
+    bird VARCHAR(255),
+    fish VARCHAR(255),
+    flower VARCHAR(255),
+    fruit VARCHAR(255),
+    mammal VARCHAR(255),
+    tree VARCHAR(255),
+    assembly VARCHAR(255),
+    high_court VARCHAR(255),
+    rajya_sava_seat INT,
+    lok_sava_seat INT,
+    map_link_url VARCHAR(255),
+    FOREIGN KEY (country_id) REFERENCES country(id)
+);
+ALTER TABLE state 
+MODIFY created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE state 
+MODIFY updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+
+return `
+                        <div style="display: flex; column-gap: 5px; justify-content: center;">
+                            <button class="btn btn-primary edit-btn" 
+                                    data-id="${row.id}" 
+                                    data-country_id="${row.country_id}" 
+                                    data-name="${row.name}" 
+                                    data-slug="${row.slug}" 
+                                    data-code="${row.code}" 
+                                    data-created_at="${row.created_at}" 
+                                    data-updated_at="${row.updated_at}" 
+                                    data-continent_name="${row.continent_name}" 
+                                    data-country_name="${row.country_name}" 
+                                    data-capital="${row.capital}" 
+                                    data-brief_history="${row.brief_history}" 
+                                    data-formation_date="${row.formation_date}" 
+                                    data-language="${row.language}" 
+                                    data-chief_minister="${row.chief_minister}" 
+                                    data-governor="${row.governor}" 
+                                    data-chief_justice="${row.chief_justice}" 
+                                    data-denonyme="${row.denonyme}" 
+                                    data-area="${row.area}" 
+                                    data-area_rank="${row.area_rank}" 
+                                    data-population="${row.population}" 
+                                    data-population_rank="${row.population_rank}" 
+                                    data-gdp="${row.gdp}" 
+                                    data-gdp_rank="${row.gdp_rank}" 
+                                    data-per_capita_income="${row.per_capita_income}" 
+                                    data-per_capita_income_rank="${row.per_capita_income_rank}" 
+                                    data-literacy="${row.literacy}" 
+                                    data-literacy_rank="${row.literacy_rank}" 
+                                    data-male_literacy="${row.male_literacy}" 
+                                    data-female_literacy="${row.female_literacy}" 
+                                    data-sex_ratio="${row.sex_ratio}" 
+                                    data-sex_ratio_rank="${row.sex_ratio_rank}" 
+                                    data-child_sex_ratio="${row.child_sex_ratio}" 
+                                    data-child_sex_ratio_rank="${row.child_sex_ratio_rank}" 
+                                    data-embelam_image="${row.embelam_image}" 
+                                    data-song="${row.song}" 
+                                    data-bird="${row.bird}" 
+                                    data-fish="${row.fish}" 
+                                    data-flower="${row.flower}" 
+                                    data-fruit="${row.fruit}" 
+                                    data-mammal="${row.mammal}" 
+                                    data-tree="${row.tree}" 
+                                    data-assembly="${row.assembly}" 
+                                    data-high_court="${row.high_court}" 
+                                    data-rajya_sava_seat="${row.rajya_sava_seat}" 
+                                    data-lok_sava_seat="${row.lok_sava_seat}" 
+                                    data-map_link_url="${row.map_link_url}">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger delete-btn" 
+                                    data-id="${row.id}">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>`;
