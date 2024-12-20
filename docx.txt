@@ -326,3 +326,45 @@ return `
                                 <i class="fa fa-trash"></i>
                             </button>
                         </div>`;
+
+
+                        if (resCode.equalsIgnoreCase("200")) {
+
+    List<ArticlesModel> newArticles = new ArrayList<>();
+
+    JSONArray blogListArray = response.getJSONArray("blog_list");
+
+    for (int i = 0; i < blogListArray.length(); i++) {
+
+        JSONObject articleObject = blogListArray.getJSONObject(i);
+
+        String title = articleObject.getString("title");
+        String content = articleObject.getString("content");
+        String id = articleObject.getString("id");
+        String reading_time = articleObject.getString("reading_time");
+        String is_state_or_country = articleObject.getString("is_state_or_country");
+        String updated_at = articleObject.getString("updated_at");
+        String image = articleObject.getString("image");
+        String trending = articleObject.getString("trending");
+        String likeCount = articleObject.getString("like_count");
+
+        if (is_state_or_country.equalsIgnoreCase("C")){
+
+            country_state_name = articleObject.getString("country_name");
+
+        }else {
+
+            country_state_name = articleObject.getString("state_name");
+
+        }
+
+        if (!articleNamesSet.contains(title)) {
+
+            ArticlesModel article = new ArticlesModel(id,title, content,reading_time,is_state_or_country,image,country_state_name,updated_at,likeCount,trending);
+            newArticles.add(article);
+            articleNamesSet.add(title);
+
+        }
+    }
+userJson.put("param", "");
+""/"C"/"S"
